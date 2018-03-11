@@ -82,7 +82,7 @@ Gomoku.prototype._click = function(event){
   var size = this.options.size + 1;
   var cellSzie = this.cellSzie;
   var min = this.options.padding;
-  var max = this.options.width - min;
+  var max = this.options.width - min - 1;
   var offsetX = event.offsetX;
   var offsetY = event.offsetY;
   if(max<offsetY||max<offsetX||min>offsetX||min>offsetY){
