@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    .app {
+      text-align: center;
+    }
+    .handle {
+      text-align: center;
+    }
+    .tip {
+      height: 40px;
+      line-height: 40px;
+      font-size: 24px;
+      text-align: center;
+      margin: 2px 0;
+    }
+    button {
+      -webkit-appearance: none;
+      border: 1px solid #e4e4e4;
+      background: transparent;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="tip">黑棋</h1>
+  <div class="app"></div>
+  <div class="handle">
+    <button class="reset">reset</button>
+    <button class="prev">prev</button>
+    <button class="next">next</button>
+</div>
+<script src="./Gomoku.js"></script>
+<script>
+  var tip = document.querySelector('.tip');
+  var gomoku = new Gomoku({callback: function(role, win, list, status){
+    var text = role === 1 ? '下一步:白棋' : '下一步:黑棋';
+    if (win) {
+      text = role === 1 ? '黑棋赢了' : '白棋赢了';
+    } else if (status) {
+      text = '平棋';
+    }
+    tip.textContent = text;
+  }});
+  document.querySelector('.app').appendChild(gomoku.cvs);
+  document.querySelector('.reset').addEventListener('click',function(){
+    gomoku.reset();
+  })
+  document.querySelector('.prev').addEventListener('click',function(){
+    gomoku.prev();
+  })
+  document.querySelector('.next').addEventListener('click',function(){
+    gomoku.next();
+  })
+</script>
+</body>
+</html>
