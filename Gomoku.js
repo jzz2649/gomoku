@@ -104,31 +104,25 @@ Gomoku.prototype._click = function(event){
 }
 
 Gomoku.prototype._getWin = function(){
+  var win = false, list = this.chesss, len = list.length;
+  var black = [], white = [], winList = [];
   var size = this.options.size + 1;
-  var n = this.options.n - 1;
-  var max = size * size;
-  var black = [];
-  var white = [];
-  var winList = [];
-  var chess;
-  for(var i =0; i<=this.chesss.length; i++) {
-    var chess = this.chesss[i];
-    if(chess === 1) {
-      black.push(i);
-    }else if( chess === 2){
-      white.push(i);
-    }
+  var n = this.options.n;
+  for (var i = 0; i < len; i++) {
+    if (list[i] === 1) black.push(i);
+    else if (list[i] === 2) white.push(i);
   }
-  if(white.length>n){
-    if(compare(white)){
-      this.win = true;
+  [black, white].forEach(function(item) {
+    if (item.length >= n) {
+      if (compare(item)) {
+        win = true;
+      }
     }
-  }
-  if(black.length>n){
-    if(compare(black)){
-      this.win = true;
-    }
-  }
+  });
+
+  this.winList = winList;
+  return this.win = win;
+
   function compare(list) {
     switch (true) {
       case comp(list, 1):
@@ -141,51 +135,50 @@ Gomoku.prototype._getWin = function(){
     }
   }
   // 1 skewLeft 2 skewRight 3 vertical 4 level
+  function getV(m, type) {
+    var v = m + size - 1;
+    var cell1 = Math.floor(m / size);
+    var cell2 = Math.floor(v / size) - 1;
+    if (type === 2) {
+      v += 2;
+      cell2 = Math.floor(v / size) - 1;
+    } else if (type === 3) {
+      v += 1;
+      cell2 = Math.floor(v / size);
+      cell2 = v < len ? cell2 - 1 : cell2;
+    } else if (type === 4) {
+      v = m + 1;
+      cell2 = Math.floor(v / size);
+    }
+    var condition = cell1 === cell2;
+    return { v: v, condition: condition };
+  }
   function comp(list, type) {
-    if(list.length===0) return false;
-    var v = list[0];
-    var arr = [v];
-    var newList = [];
-    function compare(m){
-      var v1 = m + size - 1;
-      var cell1 = Math.floor(m/size);
-      var cell2 = Math.floor(v1/size) - 1;
-      var condition = cell1 === cell2;
-      if(type === 2) {
-        v1 += 2
-        cell2 = Math.floor(v1/size) - 1;
-        condition = cell1 === cell2;
-      }else if ( type === 3) {
-        v1 += 1;
-        condition = v1 <= max
-      }else if ( type === 4) {
-        v1 = m + 1;
-        cell2 = Math.floor(v1/size);
-        condition = cell1 === cell2;
-      }
+    if (list.length === 0) return false;
+    var v = list[0],
+      arr = [v],
+      newList = [];
+    function compare(m) {
+      var gv = getV(m, type);
+      var v1 = gv.v;
+      var condition = gv.condition;
       var result = false;
-      if(condition){
-        if (~list.indexOf(v1)){
-          arr.push(v1);
-          if(arr.length>n) {
-            winList = arr;
-            return true;
+      if (condition) {
+        if (~list.indexOf(v1)) {
+          if (arr.push(v1) >= n) {
+            return (winList = arr), true;
           }
-          result = compare(v1)
+          result = compare(v1);
         }
       }
       return result;
     }
-    if(compare(v)) return true;
-    for(var j=0; j<list.length; j++){
-      if(arr.indexOf(list[j]) < 0) {
-        newList.push(list[j]);
-      }
+    if (compare(v)) return true;
+    for (var j = 0; j < list.length; j++) {
+      if (arr.indexOf(list[j]) < 0) newList.push(list[j]);
     }
     return comp(newList, type);
   }
-  this.winList = winList;
-  return this.win;
 }
 
 Gomoku.prototype._setRole = function(role){
