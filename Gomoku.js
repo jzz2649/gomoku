@@ -212,6 +212,10 @@ Gomoku.prototype.reset = function(){
   this.win = false;
   this.winList = [];
   this.queue = [];
-  this.chesss = '0'.repeat(size*size).split('').map(d=>d>>>0);
+  this.chesss = (function(){
+    var arr = [],count = size*size;
+    while(arr.push(0)<count);
+    return arr;
+  })();
   this._draw();
 }
